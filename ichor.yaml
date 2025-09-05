@@ -1,0 +1,23 @@
+name: ichor
+
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+
+dependencies:
+  - bioconductor-genomeinfodb
+  - bioconductor-genomicranges
+  - bioconductor-hmmcopy
+  - hmmcopy
+  - python
+  - pandas
+  - pyyaml
+  - r-base
+  - r-biocmanager
+  - r-ichorcna
+  - r-devtools
+  - r-optparse
+  - r-plyr
+  - snakemake
+  
