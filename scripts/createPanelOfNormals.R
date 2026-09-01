@@ -76,7 +76,8 @@ for (i in 1:length(files)){
 		targetedSequences <- NULL
 	}
 	normal_counts <- loadReadCountsFromWig(normal_reads, chrs=chrs, gc=gc, map=map, 
-					centromere=centromere, targetedSequences=targetedSequences)
+					centromere=centromere, targetedSequences=targetedSequences, 
+					genomeStyle = genomeStyle, chrNormalize = chrNormalize)
 	
 	gender <- normal_counts$gender
 
@@ -97,7 +98,6 @@ for (i in 1:length(files)){
 	values(normalGR)[[sid]][chrXInd] <- values(normalGR)[[sid]][chrXInd] - chrXMedian
 	
 }
-
 
 mat <- values(normalGR)
 if (method == "median"){
