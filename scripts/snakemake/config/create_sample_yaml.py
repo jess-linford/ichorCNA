@@ -1,32 +1,55 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-import glob
 import pathlib
 import os
 import sys
+import argparse
 
-bamfolder = sys.argv[1]
+# --- Parse command-line arguments ---
+parser = argparse.ArgumentParser(description="Generate a samples.yaml file from a folder of BAM files.")
+parser.add_argument("bamfolder", help="Path to the folder containing BAM files")
+parser.add_argument(
+    "--extension",
+    default=None,
+    help="Suffix to strip from filenames to get sample names (e.g. 'GRCh38.bwa_meth.coorsort.filt.bam')"
+)
+args = parser.parse_args()
 
+bamfolder = args.bamfolder
+extension = args.extension
 
-# In[2]:
-
+# --- Find and sort BAM files ---
 bam_files = []
 for filepath in pathlib.Path(bamfolder).glob('**/*.bam'):
     bam_files.append(str(filepath.absolute()))
-bam_files
 
-# Sort bam files alphabetically by filename
 bam_files.sort(key=lambda x: os.path.basename(x))
 
+# --- Helper function to derive sample name from filename ---
+def get_sample_name(bam_path, extension):
+    basename = os.path.basename(bam_path)
 
-# In[3]:
+    if extension is not None:
+        if basename.endswith(extension):
+            return basename[:-len(extension)]
+        else:
+            print(
+                f"WARNING: '{basename}' does not end with expected extension "
+                f"'{extension}'. Falling back to stripping only '.bam'.",
+                file=sys.stderr
+            )
 
-f = open("samples.yaml", "w")
-f.write('samples:\n')
-for bam_file in bam_files:
-    f.write(" "+os.path.basename(bam_file)+": "+bam_file+"\n")
-f.close()
+    # Fallback: strip ".bam"
+    if basename.endswith(".bam"):
+        return basename[:-4]
+
+    return basename
+
+# --- Write samples.yaml ---
+with open("samples.yaml", "w") as f:
+    f.write('samples:\n')
+    for bam_file in bam_files:
+        sample_name = get_sample_name(bam_file, extension)
+        f.write(f" {sample_name}: {bam_file}\n")
 
